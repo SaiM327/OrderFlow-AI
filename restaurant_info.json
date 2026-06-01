@@ -1,0 +1,36 @@
+{
+  "restaurant_name": "Demo Bistro",
+  "hours": {
+    "monday": "11 AM - 9 PM",
+    "tuesday": "11 AM - 9 PM",
+    "wednesday": "11 AM - 9 PM",
+    "thursday": "11 AM - 9 PM",
+    "friday": "11 AM - 10 PM",
+    "saturday": "12 PM - 10 PM",
+    "sunday": "Closed"
+  },
+  "menu": [
+    {
+      "name": "Vegan Bowl",
+      "price": 10.99,
+      "tags": ["vegan", "vegetarian", "gluten-free"],
+      "available": true
+    },
+    {
+      "name": "Margherita Pizza",
+      "price": 12.99,
+      "tags": ["vegetarian"],
+      "available": true
+    },
+    {
+      "name": "Chicken Sandwich",
+      "price": 9.99,
+      "tags": ["meat"],
+      "available": true
+    }
+  ],
+  "policies": {
+    "payment": "Payment is handled in-store.",
+    "pickup": "Pickup orders usually take 20-30 minutes."
+  }
+}
