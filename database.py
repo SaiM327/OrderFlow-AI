@@ -1,6 +1,6 @@
 #connects to the actual database
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 DATABASE_URL = "sqlite:///./orders.db" #use a local SQLite database named orders.db
@@ -17,3 +17,21 @@ SessionLocal = sessionmaker( #creates a new session for each request --> you ope
 )
 
 Base = declarative_base()
+
+
+def run_migrations():
+    inspector = inspect(engine)
+
+    if not inspector.has_table("orders"):
+        return
+
+    columns = {column["name"] for column in inspector.get_columns("orders")}
+
+    if "confirmed_at" not in columns:
+        with engine.begin() as connection:
+            connection.execute(
+                text("ALTER TABLE orders ADD COLUMN confirmed_at DATETIME")
+            )
+
+
+run_migrations()

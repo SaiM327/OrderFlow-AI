@@ -18,6 +18,7 @@ class Order(Base): #table for orders
     special_notes = Column(String, nullable=True)
 
     created_at = Column(DateTime, default=datetime.utcnow)
+    confirmed_at = Column(DateTime, nullable=True)
 
     items = relationship("OrderItem", back_populates="order") #double ended link between orders and order items, so you can easily access the order from an order item and vice versa
 

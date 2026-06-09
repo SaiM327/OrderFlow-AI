@@ -1,36 +1,229 @@
 {
-  "restaurant_name": "Demo Bistro",
+  "restaurant_name": "Casa Verde",
+  "categories": [
+    "appetizers",
+    "entrees",
+    "drinks",
+    "desserts",
+    "sides"
+  ],
   "hours": {
-    "monday": "11 AM - 9 PM",
-    "tuesday": "11 AM - 9 PM",
-    "wednesday": "11 AM - 9 PM",
-    "thursday": "11 AM - 9 PM",
-    "friday": "11 AM - 10 PM",
-    "saturday": "12 PM - 10 PM",
-    "sunday": "Closed"
+    "monday": "11 AM - 10 PM",
+    "tuesday": "11 AM - 10 PM",
+    "wednesday": "11 AM - 10 PM",
+    "thursday": "11 AM - 10 PM",
+    "friday": "11 AM - 11 PM",
+    "saturday": "11 AM - 11 PM",
+    "sunday": "12 PM - 9 PM"
   },
   "menu": [
     {
-      "name": "Vegan Bowl",
-      "price": 10.99,
-      "tags": ["vegan", "vegetarian", "gluten-free"],
+      "name": "Guacamole & Chips",
+      "price": 6.99,
+      "category": "appetizers",
+      "tags": [
+        "vegetarian",
+        "vegan",
+        "gluten-free"
+      ],
       "available": true
     },
     {
-      "name": "Margherita Pizza",
+      "name": "Elote (Street Corn)",
+      "price": 5.99,
+      "category": "appetizers",
+      "tags": [
+        "vegetarian",
+        "gluten-free"
+      ],
+      "available": true
+    },
+    {
+      "name": "Queso Fundido",
+      "price": 7.99,
+      "category": "appetizers",
+      "tags": [
+        "vegetarian"
+      ],
+      "available": true
+    },
+    {
+      "name": "Taquitos (4)",
+      "price": 8.49,
+      "category": "appetizers",
+      "tags": [
+        "meat"
+      ],
+      "available": true
+    },
+    {
+      "name": "Carne Asada Burrito",
+      "price": 13.99,
+      "category": "entrees",
+      "tags": [
+        "meat",
+        "gluten-free"
+      ],
+      "available": true
+    },
+    {
+      "name": "Chicken Enchiladas",
       "price": 12.99,
-      "tags": ["vegetarian"],
+      "category": "entrees",
+      "tags": [
+        "meat"
+      ],
       "available": true
     },
     {
-      "name": "Chicken Sandwich",
-      "price": 9.99,
-      "tags": ["meat"],
+      "name": "Carnitas Tacos (3)",
+      "price": 11.99,
+      "category": "entrees",
+      "tags": [
+        "meat",
+        "gluten-free"
+      ],
+      "available": true
+    },
+    {
+      "name": "Veggie Fajitas",
+      "price": 12.49,
+      "category": "entrees",
+      "tags": [
+        "vegetarian",
+        "vegan",
+        "gluten-free"
+      ],
+      "available": true
+    },
+    {
+      "name": "Horchata",
+      "price": 3.99,
+      "category": "drinks",
+      "tags": [
+        "vegetarian",
+        "vegan"
+      ],
+      "available": true
+    },
+    {
+      "name": "Jamaica Agua Fresca",
+      "price": 3.49,
+      "category": "drinks",
+      "tags": [
+        "vegetarian",
+        "vegan",
+        "gluten-free"
+      ],
+      "available": true
+    },
+    {
+      "name": "Mexican Coke",
+      "price": 2.99,
+      "category": "drinks",
+      "tags": [
+        "vegetarian",
+        "vegan",
+        "gluten-free"
+      ],
+      "available": true
+    },
+    {
+      "name": "Limeade",
+      "price": 3.49,
+      "category": "drinks",
+      "tags": [
+        "vegetarian",
+        "vegan",
+        "gluten-free"
+      ],
+      "available": true
+    },
+    {
+      "name": "Churros",
+      "price": 5.99,
+      "category": "desserts",
+      "tags": [
+        "vegetarian"
+      ],
+      "available": true
+    },
+    {
+      "name": "Tres Leches Cake",
+      "price": 6.99,
+      "category": "desserts",
+      "tags": [
+        "vegetarian"
+      ],
+      "available": true
+    },
+    {
+      "name": "Flan",
+      "price": 4.99,
+      "category": "desserts",
+      "tags": [
+        "vegetarian",
+        "gluten-free"
+      ],
+      "available": true
+    },
+    {
+      "name": "Sopapillas",
+      "price": 5.49,
+      "category": "desserts",
+      "tags": [
+        "vegetarian"
+      ],
+      "available": true
+    },
+    {
+      "name": "Mexican Rice",
+      "price": 3.99,
+      "category": "sides",
+      "tags": [
+        "vegetarian",
+        "vegan",
+        "gluten-free"
+      ],
+      "available": true
+    },
+    {
+      "name": "Refried Beans",
+      "price": 3.49,
+      "category": "sides",
+      "tags": [
+        "vegetarian",
+        "gluten-free"
+      ],
+      "available": false
+    },
+    {
+      "name": "Street Corn Cup",
+      "price": 4.49,
+      "category": "sides",
+      "tags": [
+        "vegetarian",
+        "gluten-free"
+      ],
+      "available": true
+    },
+    {
+      "name": "Side Guacamole",
+      "price": 3.99,
+      "category": "sides",
+      "tags": [
+        "vegetarian",
+        "vegan",
+        "gluten-free"
+      ],
       "available": true
     }
   ],
   "policies": {
     "payment": "Payment is handled in-store.",
     "pickup": "Pickup orders usually take 20-30 minutes."
+  },
+  "contact": {
+    "phone": "+1 (555) 234-7890"
   }
 }

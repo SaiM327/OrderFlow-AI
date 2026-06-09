@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OrderFlow — Staff Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/dashboard/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">🌮</div>
+        <div>
+          <p class="brand-label">OrderFlow</p>
+          <h1 class="brand-name" id="restaurant-name">Casa Verde</h1>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-btn active" data-view="overview">Overview</button>
+        <button class="nav-btn" data-view="orders">Orders</button>
+        <button class="nav-btn" data-view="menu">Menu</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <p class="live-indicator"><span class="pulse"></span> Live updates</p>
+        <p class="last-updated" id="last-updated">—</p>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h2 id="page-title">Overview</h2>
+          <p class="subtitle" id="page-subtitle">Kitchen & order management</p>
+        </div>
+        <button class="refresh-btn" id="refresh-btn">Refresh</button>
+      </header>
+
+      <section class="view active" id="view-overview">
+        <div class="stats-grid">
+          <article class="stat-card">
+            <p class="stat-label">Active Orders</p>
+            <p class="stat-value" id="stat-active">0</p>
+          </article>
+          <article class="stat-card">
+            <p class="stat-label">Today's Orders</p>
+            <p class="stat-value" id="stat-today">0</p>
+          </article>
+          <article class="stat-card">
+            <p class="stat-label">Today's Revenue</p>
+            <p class="stat-value" id="stat-revenue">$0.00</p>
+          </article>
+          <article class="stat-card">
+            <p class="stat-label">Unavailable Items</p>
+            <p class="stat-value" id="stat-unavailable">0</p>
+          </article>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Needs Attention</h3>
+            <span class="badge" id="attention-count">0</span>
+          </div>
+          <div class="attention-list" id="attention-list"></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-orders">
+        <div class="filter-bar">
+          <button class="filter-btn" data-status="">All</button>
+          <button class="filter-btn active" data-status="confirmed">New</button>
+          <button class="filter-btn" data-status="preparing">Preparing</button>
+          <button class="filter-btn" data-status="ready">Ready</button>
+          <button class="filter-btn" data-status="completed">Completed</button>
+          <button class="filter-btn" data-status="cancelled">Cancelled</button>
+        </div>
+        <div class="orders-grid" id="orders-grid"></div>
+      </section>
+
+      <section class="view" id="view-menu">
+        <div class="menu-toolbar">
+          <p>Manage your menu — add new items or toggle availability when out of stock.</p>
+        </div>
+
+        <div class="menu-sections" id="menu-sections"></div>
+
+        <form class="add-item-form" id="add-item-form">
+          <h3>Add Menu Item</h3>
+          <div class="form-grid">
+            <label class="form-field">
+              <span>Item name</span>
+              <input type="text" name="name" placeholder="e.g. Shrimp Tacos" required />
+            </label>
+            <label class="form-field">
+              <span>Price ($)</span>
+              <input type="number" name="price" min="0.01" step="0.01" placeholder="12.99" required />
+            </label>
+            <label class="form-field">
+              <span>Category</span>
+              <select name="category" id="category-select" required></select>
+            </label>
+            <label class="form-field">
+              <span>Tags (optional)</span>
+              <input type="text" name="tags" placeholder="vegetarian, gluten-free" />
+            </label>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="action-btn primary">Add Item</button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/dashboard/app.js"></script>
+</body>
+</html>
