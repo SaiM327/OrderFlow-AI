@@ -195,7 +195,7 @@
         "vegetarian",
         "gluten-free"
       ],
-      "available": false
+      "available": true
     },
     {
       "name": "Street Corn Cup",
