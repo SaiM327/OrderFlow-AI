@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timezone
 
 from database import SessionLocal
 from models import Order, OrderItem
@@ -55,11 +55,24 @@ def serialize_order(order):
     }
 
 
+def local_today_start_utc():
+    """Start of the current local day, converted to naive UTC.
+
+    Order timestamps are stored as naive UTC, but 'today' should follow the
+    restaurant's local clock — otherwise stats reset at UTC midnight
+    (e.g. 8 PM EDT), zeroing out the day's numbers every evening.
+    """
+    local_midnight = datetime.now().astimezone().replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
+    return local_midnight.astimezone(timezone.utc).replace(tzinfo=None)
+
+
 def get_dashboard_stats():
     db = SessionLocal()
 
     try:
-        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_start = local_today_start_utc()
 
         active_orders = (
             db.query(Order)

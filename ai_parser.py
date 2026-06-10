@@ -30,13 +30,25 @@ def _parse_json_response(raw_text: str) -> dict:
         return {"intent": "unknown"}
 
 
-def parse_customer_message(message: str, restaurant_info: dict) -> dict:
+def parse_customer_message(
+    message: str, restaurant_info: dict, awaiting_name: bool = False
+) -> dict:
     categories = restaurant_info.get("categories", [])
+
+    context_note = ""
+    if awaiting_name:
+        context_note = (
+            "\nContext: The customer was just asked for their name. "
+            'A short reply that looks like a person\'s name should be treated as "provide_name" '
+            'with "customer_name" set. Only choose a different intent if the message is clearly '
+            "something else (e.g. a menu request or an order).\n"
+        )
 
     prompt = f"""
 You are an AI parser for a restaurant WhatsApp bot.
 
 Convert the customer's message into structured JSON.
+{context_note}
 
 Restaurant info:
 {json.dumps(restaurant_info, indent=2)}

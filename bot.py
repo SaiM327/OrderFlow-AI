@@ -10,26 +10,6 @@ AWAITING_NAME = "awaiting_name"
 BUILDING_ORDER_TIMEOUT_MINUTES = 60
 CANCEL_ORDER_WINDOW_MINUTES = 5
 
-CANCEL_ORDER_PHRASES = (
-    "cancel order",
-    "cancel my order",
-    "cancel the order",
-    "never mind",
-    "nevermind",
-)
-
-CALL_RESTAURANT_PHRASES = (
-    "call restaurant",
-    "call the restaurant",
-    "phone number",
-    "speak to someone",
-    "speak to a person",
-    "talk to someone",
-    "talk to a person",
-    "real person",
-    "human",
-)
-
 CATEGORY_ALIASES = {
     "appetizer": "appetizers",
     "entree": "entrees",
@@ -38,93 +18,6 @@ CATEGORY_ALIASES = {
     "desert": "desserts",
     "side": "sides",
 }
-
-GREETING_PHRASES = {
-    "hi",
-    "hello",
-    "hey",
-    "hiya",
-    "yo",
-    "good morning",
-    "good afternoon",
-    "good evening",
-}
-
-MENU_PHRASES = (
-    "menu",
-    "show menu",
-    "see menu",
-    "the menu",
-    "what's the menu",
-    "whats the menu",
-    "what do you have",
-    "what do you serve",
-    "what can i get",
-)
-
-ORDER_START_PHRASES = (
-    "can i order",
-    "could i order",
-    "i want to order",
-    "i'd like to order",
-    "id like to order",
-    "i would like to order",
-    "place an order",
-    "make an order",
-    "start an order",
-    "start ordering",
-    "order food",
-    "order something",
-    "get something to eat",
-    "i want food",
-    "i'm hungry",
-    "im hungry",
-    "can i get something",
-    "i want to get",
-    "i'd like to get",
-    "id like to get",
-    "can i get",
-    "i'll have",
-    "ill have",
-)
-
-CHECKOUT_PHRASES = (
-    "checkout",
-    "check out",
-    "that's all",
-    "thats all",
-    "that is all",
-    "place my order",
-    "submit order",
-    "finish order",
-    "i'm done",
-    "im done",
-    "done ordering",
-    "ready to checkout",
-)
-
-CART_PHRASES = (
-    "my cart",
-    "my order",
-    "view cart",
-    "show cart",
-    "what's in my cart",
-    "whats in my cart",
-    "what did i order",
-    "show my order",
-    "see my cart",
-    "current cart",
-    "current order",
-)
-
-HOURS_PHRASES = (
-    "hours",
-    "what are your hours",
-    "what are the hours",
-    "when are you open",
-    "are you open",
-    "opening hours",
-)
 
 
 def load_restaurant_info():
@@ -442,105 +335,7 @@ def format_order_summary(order, header):
     return "\n".join(lines)
 
 
-ADD_ALL_PHRASES = (
-    "every item",
-    "all items",
-    "entire menu",
-    "whole menu",
-    "everything on the menu",
-    "add all",
-    "add everything",
-)
-
-
-def wants_add_all_menu(message):
-    lower = message.lower()
-    return any(phrase in lower for phrase in ADD_ALL_PHRASES)
-
-
-def wants_cancel_order(message):
-    lower = message.lower()
-    return any(phrase in lower for phrase in CANCEL_ORDER_PHRASES)
-
-
-def wants_call_restaurant(message):
-    lower = message.lower()
-    return any(phrase in lower for phrase in CALL_RESTAURANT_PHRASES)
-
-
-def resolve_fast_intent(message, restaurant_info):
-    lower = message.lower().strip()
-    categories = restaurant_info.get("categories", [])
-
-    if wants_call_restaurant(message):
-        return {"intent": "call_restaurant"}
-
-    if wants_cancel_order(message):
-        return {"intent": "cancel_order"}
-
-    if wants_add_all_menu(message):
-        return {"intent": "add_all_to_order"}
-
-    if lower in GREETING_PHRASES:
-        return {"intent": "greeting"}
-
-    if lower in {"clear cart", "clear my cart", "empty cart", "start over", "empty my order"}:
-        return {"intent": "clear_cart"}
-
-    for phrase in HOURS_PHRASES:
-        if lower == phrase or phrase in lower:
-            return {"intent": "ask_hours"}
-
-    for phrase in CHECKOUT_PHRASES:
-        if lower == phrase or lower.startswith(f"{phrase} "):
-            return {"intent": "checkout"}
-
-    for phrase in CART_PHRASES:
-        if phrase in lower:
-            return {"intent": "view_cart"}
-
-    for phrase in MENU_PHRASES + ORDER_START_PHRASES:
-        if phrase in lower:
-            return {"intent": "ask_menu"}
-
-    if lower == "order":
-        return {"intent": "ask_menu"}
-
-    for category in categories:
-        normalized = normalize_category(category, categories)
-        category_aliases = {category, category.rstrip("s")}
-        category_aliases.update(
-            alias for alias, value in CATEGORY_ALIASES.items() if value == category
-        )
-
-        if lower in category_aliases:
-            return {"intent": "ask_menu_category", "category": normalized}
-
-        for prefix in ("show ", "see ", "show me "):
-            if lower == f"{prefix}{category}" or lower == f"{prefix}{category.rstrip('s')}":
-                return {"intent": "ask_menu_category", "category": normalized}
-
-    return None
-
-
-def handle_unknown(customer_phone, message, restaurant_info):
-    lower = message.lower().strip()
-    categories = restaurant_info.get("categories", [])
-
-    order_hints = (
-        "order",
-        "food",
-        "eat",
-        "hungry",
-        "menu",
-        "get",
-        "want",
-        "like",
-    )
-
-    if any(hint in lower for hint in order_hints):
-        return format_category_prompt(categories)
-
+def handle_unknown(customer_phone, parsed, restaurant_info, message):
     db = SessionLocal()
 
     try:
@@ -898,6 +693,107 @@ def checkout_order(customer_phone, restaurant_info):
         db.close()
 
 
+# --- Intent handlers ---
+# All handlers share the signature (customer_phone, parsed, restaurant_info, message)
+# so handle_customer_message can dispatch with a single table lookup.
+
+
+def handle_intent_greeting(customer_phone, parsed, restaurant_info, message):
+    return handle_greeting(customer_phone, restaurant_info)
+
+
+def handle_intent_provide_name(customer_phone, parsed, restaurant_info, message):
+    name = parsed.get("customer_name")
+
+    if not name:
+        set_awaiting_name(customer_phone)
+        return "What's your name?"
+
+    return save_customer_name(customer_phone, name, restaurant_info)
+
+
+def handle_intent_ask_menu(customer_phone, parsed, restaurant_info, message):
+    return format_category_prompt(restaurant_info.get("categories", []))
+
+
+def handle_intent_ask_menu_category(customer_phone, parsed, restaurant_info, message):
+    categories = restaurant_info.get("categories", [])
+    category = normalize_category(parsed.get("category"), categories)
+
+    if not category:
+        return format_category_prompt(categories)
+
+    return format_category_menu(category, restaurant_info["menu"])
+
+
+def handle_intent_ask_dietary_options(customer_phone, parsed, restaurant_info, message):
+    dietary_preference = parsed.get("dietary_preference")
+
+    if not dietary_preference:
+        return "What dietary preference are you looking for? For example: vegan, vegetarian, or gluten-free."
+
+    return format_dietary_options(restaurant_info["menu"], dietary_preference)
+
+
+def handle_intent_ask_hours(customer_phone, parsed, restaurant_info, message):
+    return format_hours(restaurant_info.get("hours", {}))
+
+
+def handle_intent_add_to_order(customer_phone, parsed, restaurant_info, message):
+    return add_items_to_order(customer_phone, parsed, restaurant_info)
+
+
+def handle_intent_add_all_to_order(customer_phone, parsed, restaurant_info, message):
+    return add_all_menu_items(customer_phone, restaurant_info)
+
+
+def handle_intent_view_cart(customer_phone, parsed, restaurant_info, message):
+    return view_cart(customer_phone)
+
+
+def handle_intent_remove_from_cart(customer_phone, parsed, restaurant_info, message):
+    return remove_from_cart(customer_phone, parsed, restaurant_info)
+
+
+def handle_intent_update_quantity(customer_phone, parsed, restaurant_info, message):
+    return update_cart_quantity(customer_phone, parsed, restaurant_info)
+
+
+def handle_intent_clear_cart(customer_phone, parsed, restaurant_info, message):
+    return clear_cart(customer_phone)
+
+
+def handle_intent_checkout(customer_phone, parsed, restaurant_info, message):
+    return checkout_order(customer_phone, restaurant_info)
+
+
+def handle_intent_cancel_order(customer_phone, parsed, restaurant_info, message):
+    return cancel_order(customer_phone)
+
+
+def handle_intent_call_restaurant(customer_phone, parsed, restaurant_info, message):
+    return format_call_restaurant(restaurant_info)
+
+
+INTENT_HANDLERS = {
+    "greeting": handle_intent_greeting,
+    "provide_name": handle_intent_provide_name,
+    "ask_menu": handle_intent_ask_menu,
+    "ask_menu_category": handle_intent_ask_menu_category,
+    "ask_dietary_options": handle_intent_ask_dietary_options,
+    "ask_hours": handle_intent_ask_hours,
+    "add_to_order": handle_intent_add_to_order,
+    "add_all_to_order": handle_intent_add_all_to_order,
+    "view_cart": handle_intent_view_cart,
+    "remove_from_cart": handle_intent_remove_from_cart,
+    "update_quantity": handle_intent_update_quantity,
+    "clear_cart": handle_intent_clear_cart,
+    "checkout": handle_intent_checkout,
+    "cancel_order": handle_intent_cancel_order,
+    "call_restaurant": handle_intent_call_restaurant,
+}
+
+
 def handle_customer_message(customer_phone, message):
     restaurant_info = load_restaurant_info()
 
@@ -909,105 +805,21 @@ def handle_customer_message(customer_phone, message):
     finally:
         db.close()
 
-    fast_intent = resolve_fast_intent(message, restaurant_info)
-
-    if fast_intent:
-        parsed = fast_intent
-    else:
-        try:
-            parsed = parse_customer_message(message, restaurant_info)
-        except Exception:
-            parsed = {"intent": "unknown"}
+    try:
+        parsed = parse_customer_message(
+            message, restaurant_info, awaiting_name=awaiting_name
+        )
+    except Exception:
+        parsed = {"intent": "unknown"}
 
     intent = parsed.get("intent")
-    menu = restaurant_info["menu"]
-    categories = restaurant_info.get("categories", [])
-    hours = restaurant_info.get("hours", {})
 
     if awaiting_name:
-        continue_intents = {
-            "ask_menu",
-            "ask_menu_category",
-            "ask_hours",
-            "ask_dietary_options",
-            "greeting",
-            "add_to_order",
-            "remove_from_cart",
-            "update_quantity",
-            "checkout",
-            "view_cart",
-            "clear_cart",
-            "add_all_to_order",
-            "cancel_order",
-            "call_restaurant",
-        }
+        clear_awaiting_name(customer_phone)
 
-        if intent in continue_intents:
-            clear_awaiting_name(customer_phone)
-        else:
+        if intent in ("provide_name", "unknown"):
             name = parsed.get("customer_name") or message
-            clear_awaiting_name(customer_phone)
             return save_customer_name(customer_phone, name, restaurant_info)
 
-    if intent == "greeting":
-        return handle_greeting(customer_phone, restaurant_info)
-
-    if intent == "provide_name":
-        name = parsed.get("customer_name")
-
-        if not name:
-            set_awaiting_name(customer_phone)
-            return "What's your name?"
-
-        return save_customer_name(customer_phone, name, restaurant_info)
-
-    if intent == "ask_menu":
-        return format_category_prompt(categories)
-
-    if intent == "ask_menu_category":
-        category = normalize_category(parsed.get("category"), categories)
-
-        if not category:
-            return format_category_prompt(categories)
-
-        return format_category_menu(category, menu)
-
-    if intent == "ask_dietary_options":
-        dietary_preference = parsed.get("dietary_preference")
-
-        if not dietary_preference:
-            return "What dietary preference are you looking for? For example: vegan, vegetarian, or gluten-free."
-
-        return format_dietary_options(menu, dietary_preference)
-
-    if intent == "ask_hours":
-        return format_hours(hours)
-
-    if intent == "add_to_order":
-        return add_items_to_order(customer_phone, parsed, restaurant_info)
-
-    if intent == "add_all_to_order":
-        return add_all_menu_items(customer_phone, restaurant_info)
-
-    if intent == "view_cart":
-        return view_cart(customer_phone)
-
-    if intent == "remove_from_cart":
-        return remove_from_cart(customer_phone, parsed, restaurant_info)
-
-    if intent == "update_quantity":
-        return update_cart_quantity(customer_phone, parsed, restaurant_info)
-
-    if intent == "clear_cart":
-        return clear_cart(customer_phone)
-
-    if intent == "checkout":
-        return checkout_order(customer_phone, restaurant_info)
-
-    if intent == "cancel_order":
-        return cancel_order(customer_phone)
-
-    if intent == "call_restaurant":
-        return format_call_restaurant(restaurant_info)
-
-    return handle_unknown(customer_phone, message, restaurant_info)
+    handler = INTENT_HANDLERS.get(intent, handle_unknown)
+    return handler(customer_phone, parsed, restaurant_info, message)
