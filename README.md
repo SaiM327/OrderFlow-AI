@@ -303,10 +303,3 @@ This separation made the system easier to test, debug, and extend.
 - Voice ordering integration
 - Instagram and SMS support
 
----
-
-## Author
-
-Sai Minnal
-
-Built as a full-stack AI application demonstrating conversational AI, backend architecture, webhook integrations, and database-driven order management.
